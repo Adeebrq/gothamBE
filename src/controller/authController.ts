@@ -2,6 +2,9 @@ import { Router, type Response, type Request, type NextFunction } from "express"
 import bcrypt from "bcrypt";
 import pool from "../config/db.ts";
 import { v4 as uuidv4 } from "uuid";
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
 
 export const register = async(req: Request, res: Response)=>{
     const {username, password} = req.body
@@ -10,14 +13,18 @@ export const register = async(req: Request, res: Response)=>{
     const password_hash= await bcrypt.hash(password, 10)
 
     try {
-        const insertQuery= await pool.query(`
+        const usernameSearch= await pool.query(`SELECT * FROM users WHERE username = $1`, [username])
+        if(usernameSearch.rows.length >0){
+            return res.status(400).json({"message": "Username already exists"})
+        }
+
+        await pool.query(`
             INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)
             `, [id, username, password_hash]) 
-            res.status(201).json({"res": true})
+            return res.status(201).json({"res": true})
     } catch (error: any) {
         res.status(400).json({"res": error || error.message})
     }
-
 }
 
 export const signin = async(req: Request, res: Response)=>{
@@ -30,14 +37,21 @@ export const signin = async(req: Request, res: Response)=>{
         return res.status(404).json({"message": "User not found"})
      }   
 
+    const user= result.rows[0]
     const password_hash= result.rows[0].password_hash
     const passwordMatch= await bcrypt.compare(password, password_hash)
 
-    if(passwordMatch){
-        res.status(200).json({"res": true, "message": "Credentials matched successfully"})
-    }else{
-        res.status(404).json({"res": false, "message": "Password is incorrect"})
+    if(!passwordMatch){
+        return res.status(404).json({"res": false, "message": "Password is incorrect"})
     }
     
+    const jwtToken= jwt.sign(
+        {userId: user.id, username: user.username },
+        process.env.JWT_SECRET as string,
+        {expiresIn: "1h"}
+    )
+
+    res.status(200).json({"res": true, "message": "Credentials matched successfully", jwtToken})
+
 }
 
