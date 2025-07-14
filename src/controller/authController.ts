@@ -46,7 +46,7 @@ export const signin = async(req: Request, res: Response)=>{
     }
     
     const jwtToken= jwt.sign(
-        {userId: user.id, username: user.username },
+        {userId: user.id, username: user.username, master_admin: user.master_admin },
         process.env.JWT_SECRET as string,
         {expiresIn: "1h"}
     )

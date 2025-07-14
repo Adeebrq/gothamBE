@@ -2,15 +2,21 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import route from "./routes/auth.ts"
-import pool from "./config/db.ts"
 import TableCreation from "./data/tablecreation.ts"
+import { WebSocketServer } from "ws"
+import SimpleWebSocketSetup from "./websocket/websocket.ts"
+import http from "http"
 
 dotenv.config()
 
 const app= express()
 app.use(express.json())
-app.use(cors())
-
+app.use(cors({
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 TableCreation()
 
 app.get("/", async(req: any, res: any)=>{
@@ -20,4 +26,8 @@ app.get("/", async(req: any, res: any)=>{
 //auth
 app.use("/v1/auth", route)
 
-app.listen(process.env.PORT, ()=> console.log("Port running on", process.env.PORT))
+const server= http.createServer(app)
+
+const wss= new WebSocketServer({server})
+SimpleWebSocketSetup(wss)
+server.listen(process.env.PORT, ()=> console.log("Port running on", process.env.PORT))
