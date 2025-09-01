@@ -21,6 +21,12 @@ interface MessagePayload {
 const WebSocketSetup = (wss: WebSocketServer) => {
     const clients: Set<Client> = new Set()
 
+    const isValidId= (str: string)=>{
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        return uuidRegex.test(str)
+
+    }
+
     wss.on("connection", async (ws: Client, req: IncomingMessage) => {
         
         console.log("ws connected")
@@ -53,12 +59,20 @@ const WebSocketSetup = (wss: WebSocketServer) => {
 
                 if (type === "join") {
                     const {roomId, roomName} = payload
+
+                    if(!isValidId(roomId)){
+                        ws.send(JSON.stringify({type: "error", message: "Room id is not a valid uuid"}))
+                        return;
+                    }
+
                     try {
 
                         if (!roomId) {
                             ws.send(JSON.stringify({ type: "error", message: "Room ID is required" }))
                             return
                         }
+
+
                         ws.roomId = roomId
                         ws.roomName= roomName
 
@@ -89,10 +103,14 @@ const WebSocketSetup = (wss: WebSocketServer) => {
                         // create new room
                         if (roomCheck.rows.length ===0 ){
                             if(paymentConfirmation){
+                                const newRoom= uuidv4()
+                                ws.roomId= newRoom
                                 await pool.query(`
                                     INSERT INTO chatrooms (id, name, is_paid_room, creator_id, default_room ) VALUES ($1, $2, $3, $4, $5)
                                     `, [ws.roomId, ws.roomName, true, ws.userId || null, true])
                             }else if(isMasterAdmin){
+                                const newRoom= uuidv4()
+                                ws.roomId= newRoom
                                 await pool.query(`
                                     INSERT INTO chatrooms (id, name, is_paid_room, creator_id, default_room ) VALUES ($1, $2, $3, $4, $5)
                                     `, [ws.roomId, ws.roomName, false, ws.userId || null, true])    
@@ -153,7 +171,7 @@ const WebSocketSetup = (wss: WebSocketServer) => {
                         // Send confirmation
                         ws.send(JSON.stringify({
                             type: "joined",
-                            payload: { roomId }
+                            payload: { roomId: ws.roomId }
                         }))
                         
                         console.log(`User ${ws.username} (${ws.userId}) joined room ${ws.roomId}`)

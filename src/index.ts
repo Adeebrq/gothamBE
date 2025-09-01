@@ -6,6 +6,8 @@ import TableCreation from "./data/tablecreation.ts"
 import { WebSocketServer } from "ws"
 import SimpleWebSocketSetup from "./websocket/websocket.ts"
 import http from "http"
+import roomsRoute from "./routes/rooms.ts"
+import { chatHistory } from "./controller/chatController.ts"
 
 dotenv.config()
 
@@ -25,6 +27,12 @@ app.get("/", async(req: any, res: any)=>{
 
 //auth
 app.use("/v1/auth", route)
+
+// chat hsitory
+app.use("/v1/rooms/:roomId/history", chatHistory)
+
+//rooms
+app.use("/v1/rooms", roomsRoute)
 
 const server= http.createServer(app)
 
