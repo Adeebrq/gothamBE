@@ -1,6 +1,6 @@
 import { Router, type Response, type Request, type NextFunction } from "express";
 import bcrypt from "bcrypt";
-import pool from "../config/db.ts";
+import pool from "../config/db";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"

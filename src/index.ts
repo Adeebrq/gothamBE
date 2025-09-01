@@ -1,13 +1,13 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import route from "./routes/auth.ts"
-import TableCreation from "./data/tablecreation.ts"
+import route from "./routes/auth"
+import TableCreation from "./data/tablecreation"
 import { WebSocketServer } from "ws"
-import SimpleWebSocketSetup from "./websocket/websocket.ts"
+import SimpleWebSocketSetup from "./websocket/websocket"
 import http from "http"
-import roomsRoute from "./routes/rooms.ts"
-import { chatHistory } from "./controller/chatController.ts"
+import roomsRoute from "./routes/rooms"
+import { chatHistory } from "./controller/chatController"
 
 dotenv.config()
 

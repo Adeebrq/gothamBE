@@ -1,7 +1,7 @@
 import {WebSocketServer, WebSocket} from "ws"
 import {v4 as uuidv4} from "uuid"
 import jwt from "jsonwebtoken"
-import pool from "../config/db.ts"
+import pool from "../config/db"
 import { IncomingMessage } from "http"
 
 

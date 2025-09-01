@@ -1,5 +1,5 @@
 import { type Response, type Request } from "express";
-import pool from "../config/db.ts";
+import pool from "../config/db";
 
 export const chatHistory = async(req: Request, res: Response)=>{
     const {roomId}= req.params
