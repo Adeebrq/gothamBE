@@ -1,6 +1,6 @@
 import { type Response, type Request } from "express";
 import bcrypt from "bcrypt";
-import pool from "../config/db";
+import pool from "../config/db.js";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
