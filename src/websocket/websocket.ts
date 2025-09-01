@@ -18,6 +18,8 @@ interface MessagePayload {
     payload: any
 }
 
+
+
 const WebSocketSetup = (wss: WebSocketServer) => {
     const clients: Set<Client> = new Set()
 
@@ -259,7 +261,7 @@ const WebSocketSetup = (wss: WebSocketServer) => {
             console.log(`Connection closed for user: ${ws.username}`)
         })
 
-        ws.on('error', (error) => {
+        ws.on('error', (error: any) => {
             console.error(`WebSocket error for user ${ws.username}:`, error)
             clients.delete(ws)
         })
