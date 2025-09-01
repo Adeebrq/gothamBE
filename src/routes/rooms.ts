@@ -1,5 +1,5 @@
 import {Router, type Request, type Response, type NextFunction } from "express";
-import pool from "../config/db.ts";
+import pool from "../config/db";
 import jwt from "jsonwebtoken"
 
 const route = Router()
