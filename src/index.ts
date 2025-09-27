@@ -21,12 +21,18 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: [
-        "http://localhost:3000", 
-        "http://localhost:3001", 
-        "http://127.0.0.1:3000", 
-        "http://127.0.0.1:3001"
-    ],
+    origin: true,
+    // [
+    //     "http://localhost:3000", 
+    //     "http://localhost:3001", 
+    //     "http://127.0.0.1:3000", 
+    //     "http://127.0.0.1:3001",
+    //       "https://gotham.domain.com",
+    //     "https://adeebrq.com", // Replace with your actual frontend URL
+    //     "https://your-app.netlify.app",     // If using Netlify
+    //     "https://your-app.vercel.app",      // If using Vercel
+    //     "https://your-app.github.io"        // If using GitHub Pages
+    // ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
